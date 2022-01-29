@@ -1,4 +1,5 @@
 import os
+import aiogram.utils.markdown as fmt
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher, FSMContext
@@ -68,8 +69,22 @@ async def callback_fac(call,state: FSMContext):
 
 @dp.callback_query_handler(state=States.SETTED_GROUP)
 async def callback_group(call,state: FSMContext):
-    for l in await web.get_Table(session.query(Groups).filter(Groups.group_name == call.data).first().fac_id, call.data):
-        await bot.send_message(call.message.chat.id,l)
+    table = await web.get_Table(session.query(Groups).filter(Groups.group_name == call.data).first().fac_id, call.data)
+    msg = ''
+    for w in table.keys():
+        msg+='<strong>--------------'+w+'--------------\n</strong>'
+        for d in table[w].keys():
+            msg+='<u>'+d+'----------------------</u>\n'
+            if table[w][d]['lesson']:
+                for l in table[w][d]['lesson']:
+                    msg+='<b>       '+l['time']+'</b> '
+                    msg+=l['room']
+                    msg+=''+l['name']+'\n'
+                    msg+='<i>       '+l['tutor']+'</i>\n\n'
+            else:
+                msg+='<a>Занятий нет\n</a>'
+            msg+='<a>\n</a>'
+    await bot.send_message(call.message.chat.id,msg, parse_mode="HTML") #<a href="URI_адрес">Анкор ссылки</a>, <b>, <strong>, <i> and <em>.
     await state.reset_state()
 
 
