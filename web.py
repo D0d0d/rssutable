@@ -1,6 +1,5 @@
 import requests, lxml
 from lxml import etree, html
-from selenium import webdriver
 
 
 async def get_Facs():
