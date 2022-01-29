@@ -1,1 +1,1 @@
-workerk: python3 bot.py
+workerk: python bot.py
